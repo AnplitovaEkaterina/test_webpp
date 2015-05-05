@@ -1,0 +1,46 @@
+#!/bin/sh
+
+IS_DISABLED_HOOK=$(git config hook.phpcodesniffer)
+GIT_PATH=$(git rev-parse --git-dir)
+PROJECT_PATH=$(dirname $GIT_PATH)
+STAGED_FILES_CMD=$(git diff --cached --name-only --diff-filter=ACMR HEAD -- '*.php')
+
+# Determine if a file list is passed
+if [ "$#" -eq 1 ]; then
+  oIFS=$IFS
+  IFS='
+  '
+  SFILES="$1"
+  IFS=$oIFS
+fi
+SFILES=${SFILES:-$STAGED_FILES_CMD}
+
+if [ "$FILES" != "" ]; then
+  echo "Checking PHP Lint..."
+  for FILE in $SFILES
+  do
+    OUTPUT=$(php -l -d display_errors=0 $PROJECT_PATH/$FILE)
+    RETVAL=$?
+    if [ $RETVAL -ne 0 ]; then
+      echo "$OUTPUT"
+      echo "Fix the error before commit."
+      exit $RETVAL
+    fi
+    FILES="$FILES $PROJECT_PATH/$FILE"
+  done
+
+  if [ "$IS_DISABLED_HOOK" == "disabled" ]; then
+    echo "Skip Code Sniffer"
+    exit 0
+  fi
+
+  echo "Running Code Sniffer..."
+  $PROJECT_PATH/.dev_tools/vendor/bin/phpcs --standard=$PROJECT_PATH/.dev_tools/hooks/pre-commit-scripts/webpp_ruleset.xml --encoding=utf-8 -p $FILES
+  RETVAL=$?
+  if [ $RETVAL -ne 0 ]; then
+    echo "Fix the error before commit."
+    exit $RETVAL
+  fi
+fi
+ 
+exit 0

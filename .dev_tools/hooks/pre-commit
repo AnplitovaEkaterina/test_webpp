@@ -1,0 +1,19 @@
+#!/bin/sh
+
+GIT_PATH=$(git rev-parse --git-dir)
+HOOKS_PATH="$GIT_PATH/hooks/pre-commit-scripts"
+HOOKS_LIST="$HOOKS_PATH/*"
+
+for hook in ${HOOKS_LIST}
+do
+    if [ -x "$hook" ]; then
+        echo "Processing hook $hook"
+        source "$hook"
+        RETVAL=$?
+        if [ $RETVAL != 0 ]; then
+            exit $RETVAL
+        fi
+    fi
+done
+ 
+exit 0

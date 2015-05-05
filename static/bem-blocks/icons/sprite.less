@@ -1,0 +1,21 @@
+/**
+ * SPRITES
+ * Функции для вставки изображений со спрайта
+ */
+
+@import (reference) '_sprite.less';
+
+// Перекрываем mixin спрайтов, с нашими параметрами
+.sprite(@sprite) {
+  display: inline-block;
+  .sprite-width(@sprite);
+  .sprite-height(@sprite);
+  overflow: hidden;
+  background-repeat: no-repeat;
+  background-image: url('/static/bem-blocks/icons/sprite.png');
+  .sprite-position(@sprite);
+}
+
+.icon {
+  background-image: url('/static/bem-blocks/icons/sprite.png');
+}

@@ -1,0 +1,17 @@
+#no-post {
+    display: none;
+}
+
+#more {
+    display: none;
+    margin: 20px 0
+}
+
+#articles {
+    margin: 20px 0;
+}
+
+.post-item {
+    float: left;
+    margin: 10px 0;
+}
