@@ -1,30 +1,31 @@
+"use strict";
+
 var current_page,
     count,
     all_page,
     limit,
-    count_search;
+    count_search,
+
+    more_btn = document.getElementById("more"),
+    no_post = document.getElementById("no-post"),
+    search_str = document.getElementById("search"),
+    articles = document.getElementById("articles");
 
 function search() {
-    document.getElementById("no-post").style.display = "none";
-    document.getElementById("more").style.display = "none";
-    var str = document.getElementById("search").value;
-    if (str.length == 0) { 
-        document.getElementById("articles").innerHTML = "";
-        return;
-    } else {
-        var xmlhttp = new XMLHttpRequest();
-        
-        xmlhttp.onreadystatechange = function() {
-            if (xmlhttp.readyState == 4) {
-              if (xmlhttp.status == 200) {
-                document.getElementById("articles").innerHTML = xmlhttp.responseText;
-              }
-            }
+  no_post.style.display = "none";
+  more_btn.style.display = "none";
+  var str = search_str.value;
+  var xmlhttp = new XMLHttpRequest();
+  
+  xmlhttp.onreadystatechange = function() {
+      if (xmlhttp.readyState == 4) {
+        if (xmlhttp.status == 200) {
+          articles.innerHTML = xmlhttp.responseText;
         }
-        document.getElementById("more").style.display = "none";
-        xmlhttp.open("GET", "php/search.php?str=" + str + "&limit=" + limit + "&count_search=" + count_search, true);
-        xmlhttp.send();
       }
+  }
+  xmlhttp.open("GET", "php/search.php?str=" + str + "&limit=" + limit + "&count_search=" + count_search, true);
+  xmlhttp.send();
 }
 
 function count_post() {
@@ -56,17 +57,17 @@ function count_page() {
 
 function post_list() {
   count_post();
-  limit = 2;
+  limit = 3;
   current_page = 1;
   var xmlhttp = new XMLHttpRequest();
   xmlhttp.onreadystatechange = function() {
       if (xmlhttp.readyState == 4) {
         if (xmlhttp.status == 200) {
-          document.getElementById("articles").innerHTML = xmlhttp.responseText;
-          document.getElementById("more").style.display = "block";
+          articles.innerHTML = xmlhttp.responseText;
+          more_btn.style.display = "block";
           if ((current_page*limit) >= count) {
-            document.getElementById("more").style.display = "none";
-            document.getElementById("no-post").style.display = "block";
+            more_btn.style.display = "none";
+            no_post.style.display = "block";
           }
         }
       }
@@ -77,19 +78,20 @@ function post_list() {
 
 function more() {
   current_page++;
+  more_btn.style.display = "none";
   var xmlhttp = new XMLHttpRequest();
   xmlhttp.onreadystatechange = function() {
       if (xmlhttp.readyState == 4) {
         if (xmlhttp.status == 200) {
-          document.getElementById("articles").innerHTML = document.getElementById("articles").innerHTML + xmlhttp.responseText;
+          articles.innerHTML = articles.innerHTML + xmlhttp.responseText;
           if (current_page < all_page)
             document.getElementById("more").style.display = "block";
           else 
-            document.getElementById("no-post").style.display = "block";
+            no_post.style.display = "block";
         }
       }
   }
-  document.getElementById("more").style.display = "none";
   xmlhttp.open("GET", "php/more.php?page=" + current_page + "&limit=" + limit, true);
   xmlhttp.send();
 }
+
